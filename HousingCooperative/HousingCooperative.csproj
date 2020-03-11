@@ -130,6 +130,12 @@
     <Compile Include="fReceipts.Designer.cs">
       <DependentUpon>fReceipts.cs</DependentUpon>
     </Compile>
+    <Compile Include="fReceiptsAdd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fReceiptsAdd.Designer.cs">
+      <DependentUpon>fReceiptsAdd.cs</DependentUpon>
+    </Compile>
     <Compile Include="Houses.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -187,6 +193,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="SelectRates_Result.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SelectReceipts_Result.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="sp_helpdiagramdefinition_Result.cs">
@@ -248,6 +257,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="fReceipts.resx">
       <DependentUpon>fReceipts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="fReceiptsAdd.resx">
+      <DependentUpon>fReceiptsAdd.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

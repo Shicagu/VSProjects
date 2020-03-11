@@ -32,13 +32,13 @@ namespace HousingCooperative
         public virtual DbSet<Owners> Owners { get; set; }
         public virtual DbSet<OwnersOfHouses> OwnersOfHouses { get; set; }
         public virtual DbSet<Rates> Rates { get; set; }
-        public virtual DbSet<Receipts> Receipts { get; set; }
         public virtual DbSet<Statuses> Statuses { get; set; }
         public virtual DbSet<StatusesOfRates> StatusesOfRates { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<TypesOfCounters> TypesOfCounters { get; set; }
         public virtual DbSet<TypesOfPayment> TypesOfPayment { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<Receipts> Receipts { get; set; }
     
         public virtual ObjectResult<SelectCounters_Result> SelectCounters()
         {
@@ -198,6 +198,15 @@ namespace HousingCooperative
                 new ObjectParameter("name", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SearchOwnersOfHouses_Result>("SearchOwnersOfHouses", nameParameter);
+        }
+    
+        public virtual ObjectResult<SelectReceipts_Result> SelectReceipts(Nullable<int> idOwner)
+        {
+            var idOwnerParameter = idOwner.HasValue ?
+                new ObjectParameter("idOwner", idOwner) :
+                new ObjectParameter("idOwner", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SelectReceipts_Result>("SelectReceipts", idOwnerParameter);
         }
     }
 }

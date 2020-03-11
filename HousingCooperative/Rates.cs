@@ -14,6 +14,12 @@ namespace HousingCooperative
     
     public partial class Rates
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Rates()
+        {
+            this.Receipts = new HashSet<Receipts>();
+        }
+    
         public int IdRate { get; set; }
         public int TypeOfPayment { get; set; }
         public decimal Rate { get; set; }
@@ -24,5 +30,7 @@ namespace HousingCooperative
     
         public virtual StatusesOfRates StatusesOfRates { get; set; }
         public virtual TypesOfPayment TypesOfPayment { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Receipts> Receipts { get; set; }
     }
 }

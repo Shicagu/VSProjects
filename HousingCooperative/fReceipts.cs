@@ -17,9 +17,15 @@ namespace HousingCooperative
             InitializeComponent();
         }
 
+        HousingCooperativeEntities context = new HousingCooperativeEntities();
+        private void LoadData()
+        {
+            dgvData.DataSource = context.SelectReceipts(null).ToList();
+        }
         private void fReceipts_Load(object sender, EventArgs e)
         {
-
+            LoadData();
         }
+
     }
 }

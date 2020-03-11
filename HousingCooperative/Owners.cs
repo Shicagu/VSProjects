@@ -18,6 +18,7 @@ namespace HousingCooperative
         public Owners()
         {
             this.OwnersOfHouses = new HashSet<OwnersOfHouses>();
+            this.Receipts = new HashSet<Receipts>();
         }
     
         public int IdOwner { get; set; }
@@ -26,5 +27,7 @@ namespace HousingCooperative
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OwnersOfHouses> OwnersOfHouses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Receipts> Receipts { get; set; }
     }
 }

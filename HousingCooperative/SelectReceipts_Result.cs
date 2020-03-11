@@ -10,20 +10,15 @@
 namespace HousingCooperative
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Receipts
+    public partial class SelectReceipts_Result
     {
         public int IdReceipt { get; set; }
-        public Nullable<int> Owner { get; set; }
-        public Nullable<int> House { get; set; }
+        public string FIO { get; set; }
+        public int NumberHouse { get; set; }
         public Nullable<int> Month { get; set; }
         public Nullable<int> Year { get; set; }
         public Nullable<int> Rate { get; set; }
         public Nullable<decimal> SummPayment { get; set; }
-    
-        public virtual Houses Houses { get; set; }
-        public virtual Owners Owners { get; set; }
-        public virtual Rates Rates { get; set; }
     }
 }

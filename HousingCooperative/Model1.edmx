@@ -61,11 +61,12 @@
             <PropertyRef Name="IdReceipt" />
           </Key>
           <Property Name="IdReceipt" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Holder" Type="int" />
+          <Property Name="Owner" Type="int" />
           <Property Name="House" Type="int" />
           <Property Name="Month" Type="int" />
           <Property Name="Year" Type="int" />
-          <Property Name="TypeOfPayment" Type="int" />
+          <Property Name="Rate" Type="int" />
+          <Property Name="SummPayment" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="Statuses">
           <Key>
@@ -197,6 +198,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Receipts_Houses">
+          <End Role="Houses" Type="Self.Houses" Multiplicity="0..1" />
+          <End Role="Receipts" Type="Self.Receipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Houses">
+              <PropertyRef Name="IdHouse" />
+            </Principal>
+            <Dependent Role="Receipts">
+              <PropertyRef Name="House" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Receipts_Owners">
+          <End Role="Owners" Type="Self.Owners" Multiplicity="0..1" />
+          <End Role="Receipts" Type="Self.Receipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owners">
+              <PropertyRef Name="IdOwner" />
+            </Principal>
+            <Dependent Role="Receipts">
+              <PropertyRef Name="Owner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Receipts_Rates">
+          <End Role="Rates" Type="Self.Rates" Multiplicity="0..1" />
+          <End Role="Receipts" Type="Self.Receipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Rates">
+              <PropertyRef Name="IdRate" />
+            </Principal>
+            <Dependent Role="Receipts">
+              <PropertyRef Name="Rate" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
         <Function Name="OrderByDescriptionOwnersOfHouses" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="OrderByNumberHouseOwnersOfHouses" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
@@ -212,6 +249,9 @@
         <Function Name="SelectOwnersOfHouses" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="SelectRates" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="statusRate" Type="int" Mode="In" />
+        </Function>
+        <Function Name="SelectReceipts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="idOwner" Type="int" Mode="In" />
         </Function>
         <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
@@ -284,6 +324,18 @@
             <End Role="TypesOfPayment" EntitySet="TypesOfPayment" />
             <End Role="Rates" EntitySet="Rates" />
           </AssociationSet>
+          <AssociationSet Name="FK_Receipts_Houses" Association="Self.FK_Receipts_Houses">
+            <End Role="Houses" EntitySet="Houses" />
+            <End Role="Receipts" EntitySet="Receipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Receipts_Owners" Association="Self.FK_Receipts_Owners">
+            <End Role="Owners" EntitySet="Owners" />
+            <End Role="Receipts" EntitySet="Receipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Receipts_Rates" Association="Self.FK_Receipts_Rates">
+            <End Role="Rates" EntitySet="Rates" />
+            <End Role="Receipts" EntitySet="Receipts" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -312,6 +364,7 @@
           <Property Name="Area" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
           <NavigationProperty Name="Counters" Relationship="Self.FK_Counters_Houses" FromRole="Houses" ToRole="Counters" />
           <NavigationProperty Name="OwnersOfHouses" Relationship="Self.FK_OwnersOfHouses_Houses" FromRole="Houses" ToRole="OwnersOfHouses" />
+          <NavigationProperty Name="Receipts" Relationship="HousingCooperativeModel.FK_Receipts_Houses" FromRole="Houses" ToRole="Receipts" />
         </EntityType>
         <EntityType Name="Owners">
           <Key>
@@ -321,6 +374,7 @@
           <Property Name="FIO" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Passport" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="OwnersOfHouses" Relationship="Self.FK_OwnersOfHouses_Owners" FromRole="Owners" ToRole="OwnersOfHouses" />
+          <NavigationProperty Name="Receipts" Relationship="HousingCooperativeModel.FK_Receipts_Owners" FromRole="Owners" ToRole="Receipts" />
         </EntityType>
         <EntityType Name="OwnersOfHouses">
           <Key>
@@ -349,17 +403,7 @@
           <Property Name="StatusRate" Type="Int32" Nullable="false" />
           <NavigationProperty Name="StatusesOfRates" Relationship="Self.FK_Rates_StatusesOfRates" FromRole="Rates" ToRole="StatusesOfRates" />
           <NavigationProperty Name="TypesOfPayment" Relationship="Self.FK_Rates_TypesOfPayment" FromRole="Rates" ToRole="TypesOfPayment" />
-        </EntityType>
-        <EntityType Name="Receipts">
-          <Key>
-            <PropertyRef Name="IdReceipt" />
-          </Key>
-          <Property Name="IdReceipt" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Holder" Type="Int32" />
-          <Property Name="House" Type="Int32" />
-          <Property Name="Month" Type="Int32" />
-          <Property Name="Year" Type="Int32" />
-          <Property Name="TypeOfPayment" Type="Int32" />
+          <NavigationProperty Name="Receipts" Relationship="HousingCooperativeModel.FK_Receipts_Rates" FromRole="Rates" ToRole="Receipts" />
         </EntityType>
         <EntityType Name="Statuses">
           <Key>
@@ -501,7 +545,6 @@
           <EntitySet Name="Owners" EntityType="Self.Owners" />
           <EntitySet Name="OwnersOfHouses" EntityType="Self.OwnersOfHouses" />
           <EntitySet Name="Rates" EntityType="Self.Rates" />
-          <EntitySet Name="Receipts" EntityType="Self.Receipts" />
           <EntitySet Name="Statuses" EntityType="Self.Statuses" />
           <EntitySet Name="StatusesOfRates" EntityType="Self.StatusesOfRates" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
@@ -579,8 +622,24 @@
           <FunctionImport Name="OrderByDescriptionOwnersOfHouses" ReturnType="Collection(HousingCooperativeModel.OrderByDescriptionOwnersOfHouses_Result)" />
           <FunctionImport Name="OrderByNumberHouseOwnersOfHouses" ReturnType="Collection(HousingCooperativeModel.OrderByNumberHouseOwnersOfHouses_Result)" />
           <FunctionImport Name="SearchOwnersOfHouses" ReturnType="Collection(HousingCooperativeModel.SearchOwnersOfHouses_Result)">
-            <Parameter Name="name" Mode="In" Type="String" />
+          <Parameter Name="name" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="SelectReceipts" ReturnType="Collection(HousingCooperativeModel.SelectReceipts_Result)">
+          <Parameter Name="idOwner" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="Receipts" EntityType="HousingCooperativeModel.Receipts" />
+          <AssociationSet Name="FK_Receipts_Houses" Association="HousingCooperativeModel.FK_Receipts_Houses">
+            <End Role="Houses" EntitySet="Houses" />
+            <End Role="Receipts" EntitySet="Receipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Receipts_Owners" Association="HousingCooperativeModel.FK_Receipts_Owners">
+            <End Role="Owners" EntitySet="Owners" />
+            <End Role="Receipts" EntitySet="Receipts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Receipts_Rates" Association="HousingCooperativeModel.FK_Receipts_Rates">
+            <End Role="Rates" EntitySet="Rates" />
+            <End Role="Receipts" EntitySet="Receipts" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="SelectCounters_Result">
           <Property Type="Int32" Name="IdCounter" Nullable="false" />
@@ -662,6 +721,66 @@
           <Property Type="DateTime" Name="DatePayment" Nullable="false" />
           <Property Type="String" Name="Description" Nullable="false" MaxLength="50" />
         </ComplexType>
+        <ComplexType Name="SelectReceipts_Result">
+          <Property Type="Int32" Name="IdReceipt" Nullable="false" />
+          <Property Type="String" Name="FIO" Nullable="false" />
+          <Property Type="Int32" Name="NumberHouse" Nullable="false" />
+          <Property Type="Int32" Name="Month" Nullable="true" />
+          <Property Type="Int32" Name="Year" Nullable="true" />
+          <Property Type="Int32" Name="Rate" Nullable="true" />
+          <Property Type="Decimal" Name="SummPayment" Nullable="true" Precision="18" Scale="2" />
+        </ComplexType>
+        <EntityType Name="Receipts">
+          <Key>
+            <PropertyRef Name="IdReceipt" />
+          </Key>
+          <Property Name="IdReceipt" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Owner" Type="Int32" />
+          <Property Name="House" Type="Int32" />
+          <Property Name="Month" Type="Int32" />
+          <Property Name="Year" Type="Int32" />
+          <Property Name="Rate" Type="Int32" />
+          <Property Name="SummPayment" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="Houses" Relationship="HousingCooperativeModel.FK_Receipts_Houses" FromRole="Receipts" ToRole="Houses" />
+          <NavigationProperty Name="Owners" Relationship="HousingCooperativeModel.FK_Receipts_Owners" FromRole="Receipts" ToRole="Owners" />
+          <NavigationProperty Name="Rates" Relationship="HousingCooperativeModel.FK_Receipts_Rates" FromRole="Receipts" ToRole="Rates" />
+        </EntityType>
+        <Association Name="FK_Receipts_Houses">
+          <End Type="HousingCooperativeModel.Houses" Role="Houses" Multiplicity="0..1" />
+          <End Type="HousingCooperativeModel.Receipts" Role="Receipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Houses">
+              <PropertyRef Name="IdHouse" />
+            </Principal>
+            <Dependent Role="Receipts">
+              <PropertyRef Name="House" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Receipts_Owners">
+          <End Type="HousingCooperativeModel.Owners" Role="Owners" Multiplicity="0..1" />
+          <End Type="HousingCooperativeModel.Receipts" Role="Receipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Owners">
+              <PropertyRef Name="IdOwner" />
+            </Principal>
+            <Dependent Role="Receipts">
+              <PropertyRef Name="Owner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Receipts_Rates">
+          <End Type="HousingCooperativeModel.Rates" Role="Rates" Multiplicity="0..1" />
+          <End Type="HousingCooperativeModel.Receipts" Role="Receipts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Rates">
+              <PropertyRef Name="IdRate" />
+            </Principal>
+            <Dependent Role="Receipts">
+              <PropertyRef Name="Rate" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -721,18 +840,6 @@
                 <ScalarProperty Name="MonthBegin" ColumnName="MonthBegin" />
                 <ScalarProperty Name="YearBegin" ColumnName="YearBegin" />
                 <ScalarProperty Name="StatusRate" ColumnName="StatusRate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Receipts">
-            <EntityTypeMapping TypeName="HousingCooperativeModel.Receipts">
-              <MappingFragment StoreEntitySet="Receipts">
-                <ScalarProperty Name="IdReceipt" ColumnName="IdReceipt" />
-                <ScalarProperty Name="Holder" ColumnName="Holder" />
-                <ScalarProperty Name="House" ColumnName="House" />
-                <ScalarProperty Name="Month" ColumnName="Month" />
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="TypeOfPayment" ColumnName="TypeOfPayment" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -917,6 +1024,32 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SelectReceipts" FunctionName="Хранилище HousingCooperativeModel.SelectReceipts">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="HousingCooperativeModel.SelectReceipts_Result">
+                <ScalarProperty Name="IdReceipt" ColumnName="IdReceipt" />
+                <ScalarProperty Name="FIO" ColumnName="FIO" />
+                <ScalarProperty Name="NumberHouse" ColumnName="NumberHouse" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="SummPayment" ColumnName="SummPayment" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Receipts">
+            <EntityTypeMapping TypeName="HousingCooperativeModel.Receipts">
+              <MappingFragment StoreEntitySet="Receipts">
+                <ScalarProperty Name="SummPayment" ColumnName="SummPayment" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="House" ColumnName="House" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="IdReceipt" ColumnName="IdReceipt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

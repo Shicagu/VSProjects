@@ -19,6 +19,7 @@ namespace HousingCooperative
         {
             this.Counters = new HashSet<Counters>();
             this.OwnersOfHouses = new HashSet<OwnersOfHouses>();
+            this.Receipts = new HashSet<Receipts>();
         }
     
         public int IdHouse { get; set; }
@@ -32,5 +33,7 @@ namespace HousingCooperative
         public virtual ICollection<Counters> Counters { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OwnersOfHouses> OwnersOfHouses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Receipts> Receipts { get; set; }
     }
 }
